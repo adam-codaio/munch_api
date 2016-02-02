@@ -3,7 +3,6 @@ from django.conf.urls import patterns, include, url
 from rest_framework.routers import SimpleRouter
 from django.contrib import admin
 admin.autodiscover()
-
 from munch.viewsets.user import UserViewSet
 
 router = SimpleRouter(trailing_slash=True)
@@ -13,6 +12,5 @@ urlpatterns = patterns('',
 					   url(r'', include(router.urls)),
 					   url(r'^api/auth/$', views.Authenticate.as_view()),
 					   url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-                       url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 					   url(r'^admin/', include(admin.site.urls)),
                        )
