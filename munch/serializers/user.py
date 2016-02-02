@@ -5,7 +5,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from csp import settings
-from munch.utils import Oauth2Utils
 from munch.validators.utils import *
 from rest_framework import status
 
@@ -39,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
 		user = User.objects.create_user(username=self.validated_data.get('email'), email=self.validated_data.get('email'),
 										password=self.initial_data.get('password1'))
 
-		if self.validated_data.get('is_customer', True):
+		if self.validated_data.get('is_customer', False):
 			customer = models.Customer()
 			customer.user = user
 			customer.name = self.initial_data.get('name')
@@ -48,7 +47,6 @@ class UserSerializer(serializers.ModelSerializer):
 		if self.validated_data.get('is_restaurant', False):
 			restaurant = models.Restaurant()
 			restaurant.user = user
-			restaurant.name = self.initial_data.get('name')
 			restaurant.save()
 
 		# email activation
