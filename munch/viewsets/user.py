@@ -19,7 +19,6 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.G
 
 	def create(self, request, *args, **kwargs):
 		serializer = UserSerializer(validate_non_fields=True, data=request.data, context={'request': request})
-		print request.data
 		if serializer.is_valid():
 			serializer.create()
 			return Response(serializer.data)
