@@ -1,11 +1,13 @@
 from munch import models
 from datetime import datetime
 from rest_framework import serializers
-from munch.serializers.dynamic import DynamicFieldsModelSerializer
 from rest_framework.exceptions import ValidationError
+from munch.serializers.dynamic import DynamicFieldsModelSerializer
+from munch.serializers.restaurant import RestaurantSerializer
 
 class PromotionSerializer(DynamicFieldsModelSerializer):
     remaining = serializers.SerializerMethodField()
+    restaurant = RestaurantSerializer(partial=True, read_only=True)
 
     class Meta:
         model = models.Promotion
@@ -14,7 +16,7 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
         read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'remaining',)
 
     def create(self, **kwargs):
-    	promotion = models.Promotion.objects.create(deleted=False, restaurant=kwargs['restaurant'])
+        promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)
         return promotion
 
     def delete(self, instance):

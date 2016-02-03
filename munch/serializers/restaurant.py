@@ -3,10 +3,10 @@ from rest_framework import serializers
 from munch.serializers.dynamic import DynamicFieldsModelSerializer
 
 
-class PhoneNumberSerializer(serializers.ModelSerializer):
-	class Meta:
-        model = models.PhoneNumber
-        fields = ('id', 'phone_number',)
+# class PhoneNumberSerializer(serializers.ModelSerializer):
+# 	class Meta:
+#         model = models.PhoneNumber
+#         fields = ('id', 'phone_number',)
 
 class RestaurantSerializer(DynamicFieldsModelSerializer):
     class Meta:
