@@ -4,9 +4,11 @@ from rest_framework.routers import SimpleRouter
 from django.contrib import admin
 admin.autodiscover()
 from munch.viewsets.user import UserViewSet
+from munch.viewsets.promotion import PromotionViewSet
 
 router = SimpleRouter(trailing_slash=True)
 router.register(r'api/user', UserViewSet)
+router.register(r'api/promotion', PromotionViewSet)
 
 urlpatterns = patterns('',
 					   url(r'', include(router.urls)),

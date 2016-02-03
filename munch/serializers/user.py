@@ -28,12 +28,6 @@ class UserSerializer(serializers.ModelSerializer):
 		super(UserSerializer, self).__init__(**kwargs)
 		self.validate_non_fields = validate_non_fields
 
-	# def validate_email(self, value):
-	#     user = User.objects.filter(email=value)
-	#     if user:
-	#         raise ValidationError("That email is already in use.")
-	#     return value
-
 	def create(self, **kwargs):
 		user = User.objects.create_user(username=self.validated_data.get('email'), email=self.validated_data.get('email'),
 										password=self.initial_data.get('password1'))
@@ -49,8 +43,5 @@ class UserSerializer(serializers.ModelSerializer):
 			restaurant.user = user
 			restaurant.save()
 
-		# email activation
-		# if settings.EMAIL_ENABLED:
-		#send email
-		#active = false
+		#TODO email activation
 		return user

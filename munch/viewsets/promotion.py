@@ -4,13 +4,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from munch.models import Promotion
 from munch.permissions.user import IsRestaurant
+from munch.permissions.promotion import IsPromotionOwner
 from munch.serializers.promotion import *
 from datetime import datetime
+from oauth2_provider.ext.rest_framework import OAuth2Authentication
 
 class PromotionViewSet(viewsets.ModelViewSet):
     queryset = Promotion.objects.filter(deleted=False)
     serializer_class = PromotionSerializer
-    permission_classes = [IsRestaurant, IsAuthenticated]
+    permission_classes = [IsRestaurant, IsPromotionOwner, IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         promotion_serializer = PromotionSerializer()
@@ -33,9 +35,11 @@ class PromotionViewSet(viewsets.ModelViewSet):
         promotion_serializer.delete(instance)
         return Response(data={"message": "Promotion deleted successfully"}, status=status.HTTP_200_OK)
 
-    @list_route(methods=['get'], url_path='list_promotions')
+    @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_path='list_promotions')
     def list_promotions(self, request, *args, **kwargs):
-        promotions = Promotions.objects.filter(expiration__gt=datetime.now(), remaining__gt=1, deleted=False)
+        #TODO filter more carefully
+        #TODO TODO compute recommended values, etc
+        promotions = Promotion.objects.filter(expiration__gt=datetime.now(), deleted=False)
         serializer = PromotionSerializer(instance=promotions, many=True, fields=('id', 'text', 'repetition', 'restaurant',
                                         'expiration', 'retail_value', 'remaining'), context={'request': request})
         return Response(data=serializer.data, status=status.HTTP_200_OK)
