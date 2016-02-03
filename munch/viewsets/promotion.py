@@ -8,6 +8,8 @@ from munch.permissions.promotion import IsPromotionOwner
 from munch.serializers.promotion import *
 from datetime import datetime
 from oauth2_provider.ext.rest_framework import OAuth2Authentication
+from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
+
 
 class PromotionViewSet(viewsets.ModelViewSet):
     queryset = Promotion.objects.filter(deleted=False)
@@ -23,8 +25,7 @@ class PromotionViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         promotion_serializer = PromotionSerializer(instance=instance, data=request.data, partial=True)
         if promotion_serializer.is_valid():
-            with transaction.atomic():
-                promotion_serializer.update()
+            promotion_serializer.save()
             return Response(data={"message": "Promotion updated successfully"}, status=status.HTTP_200_OK)
         else:
             return Response(data=promotion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

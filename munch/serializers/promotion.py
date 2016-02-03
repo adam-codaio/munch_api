@@ -22,6 +22,14 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
         instance.save()
         return instance
 
+    def update(self, instance, validated_data):
+        instance.text = validated_data.get('text', instance.text)
+        instance.repetition = validated_data.get('repetition', instance.repetition)
+        instance.expiration = validated_data.get('expiration', instance.expiration)
+        instance.retail_value = validated_data.get('retail_value', instance.retail_value)
+        instance.save()
+        return instance
+
     def get_remaining(self, obj):
         #TODO count remaining available
         return 0
