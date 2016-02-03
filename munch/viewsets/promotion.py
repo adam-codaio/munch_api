@@ -8,7 +8,6 @@ from munch.permissions.promotion import IsPromotionOwner
 from munch.serializers.promotion import *
 from datetime import datetime
 from oauth2_provider.ext.rest_framework import OAuth2Authentication
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 
 class PromotionViewSet(viewsets.ModelViewSet):
@@ -19,8 +18,11 @@ class PromotionViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         promotion_serializer = PromotionSerializer(data=request.data, partial=True)
         if promotion_serializer.is_valid():
-            promotion = promotion_serializer.create(restaurant=request.user.restaurant)
-            return Response(data=promotion_serializer.data, status=status.HTTP_201_CREATED)
+            data = promotion_serializer.create(restaurant=request.user.restaurant)
+            response_data = {
+                "id": data.id
+            }
+            return Response(data=response_data, status=status.HTTP_200_OK)
         else:
             return Response(data=promotion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -29,7 +31,7 @@ class PromotionViewSet(viewsets.ModelViewSet):
         promotion_serializer = PromotionSerializer(instance=instance, data=request.data, partial=True)
         if promotion_serializer.is_valid():
             promotion_serializer.update(instance, promotion_serializer.validated_data)
-            return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
+            return Response(data={"message": "Promotion updated successfully!"}, status=status.HTTP_200_OK)
         else:
             return Response(data=promotion_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -41,8 +43,8 @@ class PromotionViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_path='list_promotions')
     def list_promotions(self, request, *args, **kwargs):
-        #TODO filter more carefully
-        #TODO TODO compute recommended values, etc
+        #TODO filter more carefully (having to do with remaining)
+        #TODO TODO return recommended values, etc
         promotions = Promotion.objects.filter(expiration__gt=datetime.now(), deleted=False)
         promotion_serializer = PromotionSerializer(instance=promotions, many=True, 
                                                     fields=('id', 'text', 'repetition', 'restaurant',
