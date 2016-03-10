@@ -16,12 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = models.User
-		validators = [
-			EqualityValidator(
-				fields=['password1', 'password2']
-			),
-			LengthValidator('password1', 8),
-		]
 		fields = ('id', 'email', 'name', 'is_customer', 'is_restaurant')
 
 	def __init__(self, validate_non_fields=False, **kwargs):
@@ -30,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	def create(self, **kwargs):
 		user = User.objects.create_user(username=self.validated_data.get('email'), email=self.validated_data.get('email'),
-										password=self.initial_data.get('password1'))
+										password=self.initial_data.get('password'))
 
 		if self.validated_data.get('is_customer', False):
 			customer = models.Customer()

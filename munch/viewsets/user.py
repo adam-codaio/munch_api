@@ -21,5 +21,5 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.G
 		serializer = UserSerializer(validate_non_fields=True, data=request.data, context={'request': request})
 		if serializer.is_valid():
 			serializer.create()
-			return Response(serializer.data)
-		return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+			return Response(data=serializer.data, status=status.HTTP_200_OK)
+		return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
