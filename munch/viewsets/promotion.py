@@ -41,13 +41,14 @@ class PromotionViewSet(viewsets.ModelViewSet):
         promotion_serializer.delete(instance)
         return Response(data={"message": "Promotion deleted successfully"}, status=status.HTTP_200_OK)
 
-    @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_path='list_promotions')
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated], url_path='list_promotions')
     def list_promotions(self, request, *args, **kwargs):
         #TODO filter more carefully (having to do with remaining)
         #TODO TODO return recommended values, etc
         promotions = Promotion.objects.filter(expiration__gt=datetime.now(), deleted=False)
-        promotion_serializer = PromotionSerializer(instance=promotions, many=True, 
+        promotion_serializer = PromotionSerializer(instance=promotions, context={'data': request.data}, many=True, 
                                                     fields=('id', 'text', 'repetition', 'restaurant',
-                                                            'expiration', 'retail_value', 'remaining',))
+                                                            'expiration', 'retail_value', 'remaining',
+                                                            'distance',))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 
