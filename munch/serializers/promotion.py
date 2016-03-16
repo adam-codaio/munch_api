@@ -4,19 +4,17 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from munch.serializers.dynamic import DynamicFieldsModelSerializer
 from munch.serializers.restaurant import RestaurantSerializer
-from geopy import Nominatim, distance
 
 
 class PromotionSerializer(DynamicFieldsModelSerializer):
     remaining = serializers.SerializerMethodField()
     restaurant = RestaurantSerializer(partial=True, read_only=True)
-    distance = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Promotion
         fields = ('id', 'text', 'repetition', 'restaurant', 'expiration', 'retail_value', 'deleted',
-        			'created_timestamp', 'last_updated', 'remaining', 'distance')
-        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'remaining', 'distance')
+        			'created_timestamp', 'last_updated', 'remaining',)
+        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'remaining',)
 
     def create(self, **kwargs):
         promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)
@@ -38,13 +36,3 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
     def get_remaining(self, obj):
         #TODO count remaining available
         return 0
-
-    def get_distance(self, obj):
-        address = obj.restaurant.address
-        geolocator = Nominatim()
-        location = geolocator.geocode(address)
-        latitude = self.context['data']['latitude']
-        longitude = self.context['data']['longitude']
-        return round(distance.vincenty((location.latitude, location.longitude), 
-                       (self.context['data']['latitude'], self.context['data']['longitude'])).miles, 2)
-

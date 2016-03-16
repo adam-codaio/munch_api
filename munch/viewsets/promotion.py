@@ -48,7 +48,6 @@ class PromotionViewSet(viewsets.ModelViewSet):
         promotions = Promotion.objects.filter(expiration__gt=datetime.now(), deleted=False)
         promotion_serializer = PromotionSerializer(instance=promotions, context={'data': request.data}, many=True, 
                                                     fields=('id', 'text', 'repetition', 'restaurant',
-                                                            'expiration', 'retail_value', 'remaining',
-                                                            'distance',))
+                                                            'expiration', 'retail_value', 'remaining',))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 
