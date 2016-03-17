@@ -9,13 +9,14 @@ from django.db import connection
 
 class PromotionSerializer(DynamicFieldsModelSerializer):
     rating = serializers.SerializerMethodField()
+    num_claims = serializers.IntegerField(read_only=True)
     restaurant = RestaurantSerializer(partial=True, read_only=True)
 
     class Meta:
         model = models.Promotion
         fields = ('id', 'text', 'repetition', 'restaurant', 'expiration', 'retail_value', 'deleted',
-        			'created_timestamp', 'last_updated', 'rating',)
-        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating',)
+        			'created_timestamp', 'last_updated', 'rating', 'num_claims',)
+        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating', 'num_claims',)
 
     def create(self, **kwargs):
         promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)

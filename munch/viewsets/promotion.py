@@ -57,11 +57,10 @@ class PromotionViewSet(viewsets.ModelViewSet):
                 ) sub 
                 ON p.id=promotion_id 
                 '''
-        promotions = Promotion.objects.raw(query, params={'customer': request.user.customer.id, 
-                                                          'now': datetime.now()})
+        promotions = Promotion.objects.raw(query)
         promotion_serializer = PromotionSerializer(instance=promotions, many=True, 
                                                    context={'customer_id': request.user.customer.id},
                                                    fields=('id', 'text', 'repetition', 'restaurant',
-                                                            'expiration', 'retail_value', 'rating',))
+                                                           'expiration', 'retail_value', 'rating', 'num_claims',))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 
