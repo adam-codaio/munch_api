@@ -44,21 +44,18 @@ class PromotionViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'], permission_classes=[IsAuthenticated], url_path='list_promotions')
     def list_promotions(self, request, *args, **kwargs):
-        #TODO filter more carefully (having to do with remaining)
-        #TODO TODO return recommended values, etc
-
         query = '''
-                SELECT p.*
+                SELECT DISTINCT p.*, 
+                       CASE WHEN sub.num_claimed IS NULL 
+                       THEN 0 ELSE sub.num_claimed END num_claims
                 FROM munch_promotion p
-                INNER JOIN (
-                    SELECT promotion_id, COUNT(*) 
+                LEFT OUTER JOIN (
+                    SELECT promotion_id, COUNT(*) num_claimed
                     FROM munch_claim c 
-                    INNER JOIN munch_promotion p ON c.promotion_id=p.id 
-                    WHERE c.customer_id <> %(customer)s
+                    INNER JOIN munch_promotion p ON c.promotion_id=p.id
                     GROUP BY promotion_id
                 ) sub 
                 ON p.id=promotion_id 
-                WHERE count < p.repetition AND p.deleted='f' AND p.expiration>%(now)s;
                 '''
         promotions = Promotion.objects.raw(query, params={'customer': request.user.customer.id, 
                                                           'now': datetime.now()})
