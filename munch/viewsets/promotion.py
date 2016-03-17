@@ -61,6 +61,7 @@ class PromotionViewSet(viewsets.ModelViewSet):
         promotion_serializer = PromotionSerializer(instance=promotions, many=True, 
                                                    context={'customer_id': request.user.customer.id},
                                                    fields=('id', 'text', 'repetition', 'restaurant',
-                                                           'expiration', 'retail_value', 'rating', 'num_claims',))
+                                                           'expiration', 'retail_value', 'rating', 'num_claims',
+                                                           'deleted'))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 

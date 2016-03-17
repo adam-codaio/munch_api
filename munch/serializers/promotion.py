@@ -15,8 +15,8 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = models.Promotion
         fields = ('id', 'text', 'repetition', 'restaurant', 'expiration', 'retail_value', 'deleted',
-        			'created_timestamp', 'last_updated', 'rating', 'num_claims',)
-        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating', 'num_claims',)
+        			'created_timestamp', 'last_updated', 'rating', 'num_claims', 'deleted',)
+        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating', 'num_claims', 'deleted',)
 
     def create(self, **kwargs):
         promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)
