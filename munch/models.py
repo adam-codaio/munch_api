@@ -9,8 +9,8 @@ class Restaurant(models.Model):
 	phone_number = models.CharField(max_length=20)
 	#Maybe regulate format of these a bit more in the future
 	address = models.CharField(max_length=128, blank=True)
-	latitude = models.FloatField()
-	longitude = models.FloatField()
+	latitude = models.FloatField(null=True, blank=True)
+	longitude = models.FloatField(null=True, blank=True)
 	hours = models.CharField(max_length=256, blank=True)
 	deleted = models.BooleanField(default=False)
 	created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
