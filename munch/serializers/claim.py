@@ -3,12 +3,10 @@ from datetime import datetime
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from munch.serializers.dynamic import DynamicFieldsModelSerializer
-from munch.serializers.customer import CustomerSerializer
-from munch.serializers.promotion import PromotionSerializer
+
 
 class ClaimSerializer(DynamicFieldsModelSerializer):
-    customer = CustomerSerializer()
-    promotion = PromotionSerializer()
+
 
     class Meta:
         model = models.Claim

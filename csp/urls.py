@@ -6,11 +6,13 @@ admin.autodiscover()
 from munch.viewsets.user import UserViewSet
 from munch.viewsets.promotion import PromotionViewSet
 from munch.viewsets.claim import ClaimViewSet
+from munch.viewsets.restaurant import RestaurantViewSet
 
 router = SimpleRouter(trailing_slash=True)
 router.register(r'api/user', UserViewSet)
 router.register(r'api/promotion', PromotionViewSet)
 router.register(r'api/claim', ClaimViewSet)
+router.register(r'api/restaurant', RestaurantViewSet)
 
 urlpatterns = patterns('',
 					   url(r'', include(router.urls)),

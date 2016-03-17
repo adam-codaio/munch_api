@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from munch.models import Claim, Promotion
 from munch.permissions.user import IsCustomer
-from munch.permissions.claim import IsClaimIssuer, IsClaimOwner
+from munch.permissions.claim import IsClaimOwner
 from munch.serializers.claim import *
 from munch.serializers.promotion import *
 from datetime import datetime
@@ -30,6 +30,7 @@ class ClaimViewSet(viewsets.ModelViewSet):
 			return Response(data={"message": "You've already claimed that promotion!"},
 						    status=status.HTTP_400_BAD_REQUEST)
 
+	#should add permission classes here
 	def update(self, request, *args, **kwargs):
 		instance = self.get_object()
 		claim_serializer = ClaimSerializer(instance=instance, data=request.data, partial=True)
@@ -39,12 +40,14 @@ class ClaimViewSet(viewsets.ModelViewSet):
 		else:
 			return Response(data=claim_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+	#maybe we should use this
 	def destroy(self, request, *args, **kwargs):
 		instance = self.get_object()
 		claim_serializer = ClaimSerializer(instance=instance)
 		claim_serializer.delete(instance)
 		return Response(data={"message": "Claim deleted successfully"}, status=status.HTTP_200_OK)
 
+	#this needs to be fixed
 	#handle permissions
 	@list_route(methods=['get'], permission_classes=[IsAuthenticated, IsClaimOwner], url_path='list_claims')
 	def list_claims(self, request, *args, **kwargs):

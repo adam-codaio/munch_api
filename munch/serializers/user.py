@@ -31,12 +31,12 @@ class UserSerializer(serializers.ModelSerializer):
 			customer.user = user
 			customer.name = self.initial_data.get('name')
 			customer.save()
+			id = customer.id
 
 		if self.validated_data.get('is_restaurant', False):
-			#address, hours, latitude, longitude
 			restaurant = models.Restaurant()
 			restaurant.user = user
 			restaurant.save()
+			id = restaurant.id
 
-		#TODO email activation
-		return user
+		return id
