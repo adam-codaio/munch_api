@@ -18,11 +18,17 @@ class ClaimViewSet(viewsets.ModelViewSet):
 	def create(self, request, *args, **kwargs):
 		promotion = Promotion.objects.get(pk=request.data['promotion_id'])
 		claim_serializer = ClaimSerializer()
-		data = claim_serializer.create(promotion=promotion, customer=request.user.customer)
-		response_data = {
-			"id": data.id
-		}
-		return Response(data=response_data, status=status.HTTP_200_OK)
+		claim = Claim.objects.filter(promotion=promotion, customer=request.user.customer)
+		if len(claim) == 0:
+			data = claim_serializer.create(promotion=promotion, customer=request.user.customer)
+			response_data = {
+				"id": data.id,
+				"created": data.created_timestamp
+			}
+			return Response(data=response_data, status=status.HTTP_200_OK)
+		else:
+			return Response(data={"message": "You've already claimed that promotion!"},
+						    status=status.HTTP_400_BAD_REQUEST)
 
 	def update(self, request, *args, **kwargs):
 		instance = self.get_object()
