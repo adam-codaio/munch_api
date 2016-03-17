@@ -4,17 +4,18 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from munch.serializers.dynamic import DynamicFieldsModelSerializer
 from munch.serializers.restaurant import RestaurantSerializer
+from django.db import connection
 
 
 class PromotionSerializer(DynamicFieldsModelSerializer):
-    remaining = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
     restaurant = RestaurantSerializer(partial=True, read_only=True)
 
     class Meta:
         model = models.Promotion
         fields = ('id', 'text', 'repetition', 'restaurant', 'expiration', 'retail_value', 'deleted',
-        			'created_timestamp', 'last_updated', 'remaining',)
-        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'remaining',)
+        			'created_timestamp', 'last_updated', 'rating',)
+        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating',)
 
     def create(self, **kwargs):
         promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)
@@ -33,6 +34,19 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
         instance.save()
         return instance
 
-    def get_remaining(self, obj):
-        #TODO count remaining available
-        return 0
+    def get_rating(self, instance):
+        customer_id = self.context['customer_id']
+        query = '''
+                SELECT COUNT(CASE WHEN is_redeemed='t' THEN 1 END) +
+                       0.5 * COUNT(CASE WHEN is_redeemed='f' THEN 1 END) rating
+                FROM munch_claim c
+                INNER JOIN munch_promotion p ON c.promotion_id=p.id
+                WHERE c.customer_id=%(customer)s AND p.restaurant_id=%(restaurant)s
+                '''
+        cursor = connection.cursor()
+        cursor.execute(query, params={'customer': customer_id, 
+                                               'restaurant': instance.restaurant.id})
+
+        rating = cursor.fetchone()
+        return float(rating[0]) * instance.retail_value
+

@@ -8,6 +8,7 @@ from munch.permissions.promotion import IsPromotionOwner
 from munch.serializers.promotion import *
 from datetime import datetime
 from oauth2_provider.ext.rest_framework import OAuth2Authentication
+from django.db.models import Count
 
 
 class PromotionViewSet(viewsets.ModelViewSet):
@@ -45,9 +46,25 @@ class PromotionViewSet(viewsets.ModelViewSet):
     def list_promotions(self, request, *args, **kwargs):
         #TODO filter more carefully (having to do with remaining)
         #TODO TODO return recommended values, etc
-        promotions = Promotion.objects.filter(expiration__gt=datetime.now(), deleted=False)
+
+        query = '''
+                SELECT p.*
+                FROM munch_promotion p
+                INNER JOIN (
+                    SELECT promotion_id, COUNT(*) 
+                    FROM munch_claim c 
+                    INNER JOIN munch_promotion p ON c.promotion_id=p.id 
+                    WHERE c.customer_id <> %(customer)s
+                    GROUP BY promotion_id
+                ) sub 
+                ON p.id=promotion_id 
+                WHERE count < p.repetition AND p.deleted='f' AND p.expiration>%(now)s;
+                '''
+        promotions = Promotion.objects.raw(query, params={'customer': request.user.customer.id, 
+                                                          'now': datetime.now()})
         promotion_serializer = PromotionSerializer(instance=promotions, many=True, 
-                                                    fields=('id', 'text', 'repetition', 'restaurant',
-                                                            'expiration', 'retail_value', 'remaining',))
+                                                   context={'customer_id': request.user.customer.id},
+                                                   fields=('id', 'text', 'repetition', 'restaurant',
+                                                            'expiration', 'retail_value', 'rating',))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 
