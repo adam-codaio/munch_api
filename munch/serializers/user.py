@@ -33,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 			customer.save()
 
 		if self.validated_data.get('is_restaurant', False):
+			#address, hours, latitude, longitude
 			restaurant = models.Restaurant()
 			restaurant.user = user
 			restaurant.save()

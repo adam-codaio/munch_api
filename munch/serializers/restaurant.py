@@ -9,7 +9,7 @@ class RestaurantSerializer(DynamicFieldsModelSerializer):
 	class Meta:
 		model = models.Restaurant
  		fields = ('id', 'user', 'name', 'phone_number', 'address', 'hours', 'deleted',
-				  'created_timestamp', 'last_updated',)# 'distance')
+				  'created_timestamp', 'last_updated', 'latitude', 'longitude',)# 'distance')
 	
 	# def get_distance(self, obj):
 	# 	address = obj.address
