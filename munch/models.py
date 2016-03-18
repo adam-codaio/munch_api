@@ -19,6 +19,7 @@ class Restaurant(models.Model):
 class Customer(models.Model):
 	user = models.OneToOneField(User)
 	name = models.CharField(max_length=32)
+	stripe_customer = models.CharField(max_length=32, null=True, blank=True)
 	deleted = models.BooleanField(default=False)
 	created_timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 	last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
