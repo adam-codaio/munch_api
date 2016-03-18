@@ -10,13 +10,17 @@ from django.db import connection
 class PromotionSerializer(DynamicFieldsModelSerializer):
     rating = serializers.SerializerMethodField()
     num_claims = serializers.IntegerField(read_only=True)
+    claimed = serializers.IntegerField(read_only=True)
+    redeemed = serializers.IntegerField(read_only=True)
     restaurant = RestaurantSerializer(partial=True, read_only=True)
 
     class Meta:
         model = models.Promotion
         fields = ('id', 'text', 'repetition', 'restaurant', 'expiration', 'retail_value', 'deleted',
-        			'created_timestamp', 'last_updated', 'rating', 'num_claims', 'deleted',)
-        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating', 'num_claims', 'deleted',)
+        			'created_timestamp', 'last_updated', 'rating', 'num_claims', 'deleted', 'claimed',
+                    'redeemed',)
+        read_only_fields = ('created_timestamp', 'last_updated', 'deleted', 'rating', 'num_claims', 'deleted',
+                            'claimed', 'redeeumed',)
 
     def create(self, **kwargs):
         promotion = models.Promotion.objects.create(restaurant=kwargs['restaurant'], **self.validated_data)
@@ -47,7 +51,6 @@ class PromotionSerializer(DynamicFieldsModelSerializer):
         cursor = connection.cursor()
         cursor.execute(query, params={'customer': customer_id, 
                                                'restaurant': instance.restaurant.id})
-
         rating = cursor.fetchone()
         return float(rating[0]) * instance.retail_value
 

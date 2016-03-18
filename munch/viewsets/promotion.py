@@ -65,3 +65,20 @@ class PromotionViewSet(viewsets.ModelViewSet):
                                                            'deleted'))
         return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
 
+    @list_route(methods=['get'], permission_classes=[IsAuthenticated, IsRestaurant],
+                url_path='details')
+    def details(self, request, *args, **kwargs):
+        query = '''
+                    SELECT p.id, 
+                           COUNT(CASE WHEN is_redeemed='f' THEN 1 END) claimed,
+                           COUNT(CASE WHEN is_redeemed='t' THEN 1 END) redeemed 
+                    FROM munch_promotion p
+                    LEFT OUTER JOIN munch_claim c ON c.promotion_id=p.id
+                    WHERE p.restaurant_id=%(restaurant)s
+                    GROUP BY p.id
+                '''
+        promotions = Promotion.objects.raw(query, params={'restaurant': request.user.restaurant.id})
+        promotion_serializer = PromotionSerializer(instance=promotions, many=True,
+                                                   fields=('id', 'claimed', 'redeemed',))
+        return Response(data=promotion_serializer.data, status=status.HTTP_200_OK)
+
