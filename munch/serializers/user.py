@@ -36,6 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 		if self.validated_data.get('is_restaurant', False):
 			restaurant = models.Restaurant()
 			restaurant.user = user
+			restaurant.name = self.initial_data.get('name')
 			restaurant.save()
 			id = restaurant.id
 
