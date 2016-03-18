@@ -40,7 +40,7 @@ class Payment(APIView):
     method_decorator(csrf_protect)
 
     def post(self, request, *args, **kwargs):
-        stripe.api_key = "sk_test_AT3w1lXG8ijkoO58n14paHdc"
+        stripe.api_key = "sk_live_dlhvj5wRV31yn1z0pYfDAUpJ"
         token = request.data.get("stripeToken")
         try:
             charge = stripe.Charge.create(
