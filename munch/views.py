@@ -9,7 +9,7 @@ from munch.serializers.user import *
 from munch.utils import *
 from munch.models import *
 from csp import settings
-
+import stripe
 
 class Authenticate(APIView):
     method_decorator(csrf_protect)
@@ -35,5 +35,22 @@ class Authenticate(APIView):
                 raise AuthenticationFailed(_('Account is not activated yet.'))
         else:
             raise AuthenticationFailed(_('Username or password is incorrect.'))
+
+class Payment(APIView):
+    method_decorator(csrf_protect)
+
+    def post(self, request, *args, **kwargs):
+        stripe.api_key = "sk_test_AT3w1lXG8ijkoO58n14paHdc"
+        token = request.data.get("stripeToken")
+        try:
+            charge = stripe.Charge.create(
+                amount=request.data.get("amount"), # in cents
+                currency="usd",
+                source=token,
+                description=request.data.get("description")
+            )
+            return Response(data={"message": "Payment success"}, status=status.HTTP_200_OK)
+        except stripe.error.CardError, e:
+            return Response(data={"error":e}, status=status.HTTP_400_BAD_REQUEST)
 
 

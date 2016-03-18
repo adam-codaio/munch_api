@@ -9,3 +9,4 @@ hashids
 httpie
 psycopg2==2.6
 geopy
+stripe

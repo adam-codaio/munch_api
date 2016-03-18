@@ -19,4 +19,5 @@ urlpatterns = patterns('',
 					   url(r'^api/auth/$', views.Authenticate.as_view()),
 					   url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 					   url(r'^admin/', include(admin.site.urls)),
+					   url(r'^api/pay/$', views.Payment.as_view())
                        )
