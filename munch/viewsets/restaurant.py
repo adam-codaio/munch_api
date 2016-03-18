@@ -12,6 +12,11 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 	serializer_class = RestaurantSerializer
 	permission_classes = [IsRestaurantOwner, IsAuthenticated]
 
+	def retrieve(self, request, *args, **kwargs):
+		instance = self.get_object()
+		restaurant_serializer = RestaurantSerializer(instance=instance, partial=True)
+		return Response(data=restaurant_serializer.data, status=status.HTTP_200_OK)
+
 	def update(self, request, *args, **kwargs):
 		instance = self.get_object()
 		restaurant_serializer = RestaurantSerializer(instance=instance, data=request.data, partial=True)

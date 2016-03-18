@@ -26,6 +26,10 @@ class Authenticate(APIView):
             	response_data = dict()
                 response_data["email"] = user.email
                 response_data["client_id"] = settings.CLIENT_ID
+                if hasattr(user, 'customer'):
+                    response_data["id"] = user.customer.id
+                elif hasattr(user, 'restaurant'):
+                    response_data["id"] = user.restaurant.id
                 return Response(response_data, status.HTTP_200_OK)
             else:
                 raise AuthenticationFailed(_('Account is not activated yet.'))
